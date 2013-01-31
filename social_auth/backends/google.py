@@ -58,12 +58,15 @@ class GoogleOAuthBackend(OAuthBackend):
 
     def get_user_details(self, response):
         """Return user details from Orkut account"""
-        email = response.get('email', '')
-        return {USERNAME: email.split('@', 1)[0],
-                'email': email,
-                'fullname': '',
-                'first_name': '',
-                'last_name': ''}
+        details = {'email': response.get('email', ''),
+                   'fullname': '',
+                   'first_name': '',
+                   'last_name': ''}
+        if setting('SOCIAL_AUTH_USERNAME_IS_FULL_EMAIL', False):
+            details[USERNAME] = details["email"]
+        else:
+            details[USERNAME] = details["email"].split('@', 1)[0]
+        return details
 
 
 class GoogleOAuth2Backend(GoogleOAuthBackend):
@@ -84,12 +87,15 @@ class GoogleOAuth2Backend(GoogleOAuthBackend):
         return user_id
 
     def get_user_details(self, response):
-        email = response.get('email', '')
-        return {USERNAME: email.split('@', 1)[0],
-                'email': email,
-                'fullname': response.get('name', ''),
-                'first_name': response.get('given_name', ''),
-                'last_name': response.get('family_name', '')}
+        details = {'email': response.get('email', ''),
+                   'fullname': response.get('name', ''),
+                   'first_name': response.get('given_name', ''),
+                   'last_name': response.get('family_name', '')}
+        if setting('SOCIAL_AUTH_USERNAME_IS_FULL_EMAIL', False):
+            details[USERNAME] = details["email"]
+        else:
+            details[USERNAME] = details["email"].split('@', 1)[0]
+        return details
 
 
 class GoogleBackend(OpenIDBackend):

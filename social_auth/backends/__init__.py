@@ -291,10 +291,16 @@ class OpenIDBackend(SocialAuthBackend):
             except ValueError:
                 last_name = fullname
 
+        if setting('SOCIAL_AUTH_USERNAME_IS_FULL_EMAIL', False) \
+                and values.get("email"):
+            username = values.get("email")
+        elif values.get(USERNAME):
+            username = values.get(USERNAME)
+        else:
+            username = first_name.title() + last_name.title()
         values.update({'fullname': fullname, 'first_name': first_name,
                        'last_name': last_name,
-                       USERNAME: values.get(USERNAME) or
-                                   (first_name.title() + last_name.title())})
+                       USERNAME: username})
         return values
 
     def extra_data(self, user, uid, response, details):

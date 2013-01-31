@@ -60,11 +60,15 @@ class FacebookBackend(OAuthBackend):
 
     def get_user_details(self, response):
         """Return user details from Facebook account"""
-        return {USERNAME: response.get('username', response.get('name')),
-                'email': response.get('email', ''),
-                'fullname': response.get('name', ''),
-                'first_name': response.get('first_name', ''),
-                'last_name': response.get('last_name', '')}
+        details = {USERNAME: response.get('username', response.get('name')),
+                   'email': response.get('email', ''),
+                   'fullname': response.get('name', ''),
+                   'first_name': response.get('first_name', ''),
+                   'last_name': response.get('last_name', '')}
+        if setting('SOCIAL_AUTH_USERNAME_IS_FULL_EMAIL', False) \
+                and detais["email"]:
+            details[USERNAME] = details["email"]
+        return details
 
 
 class FacebookAuth(BaseOAuth2):

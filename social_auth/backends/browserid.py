@@ -32,12 +32,15 @@ class BrowserIDBackend(SocialAuthBackend):
         #  'expires': 1328983575529,
         #  'email': 'name@server.com',
         #  'issuer': 'login.persona.org'}
-        email = response['email']
-        return {USERNAME: email.split('@', 1)[0],
-                'email': email,
-                'fullname': '',
-                'first_name': '',
-                'last_name': ''}
+        details = {'email': response['email'],
+                   'fullname': '',
+                   'first_name': '',
+                   'last_name': ''}
+        if setting('SOCIAL_AUTH_USERNAME_IS_FULL_EMAIL', False):
+            details[USERNAME] = details["email"]
+        else:
+            details[USERNAME] = details["email"].split('@', 1)[0]
+        return details
 
     def extra_data(self, user, uid, response, details):
         """Return users extra data"""
